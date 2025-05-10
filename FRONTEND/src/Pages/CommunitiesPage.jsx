@@ -5,11 +5,11 @@ import {
   getPublicCommunities,
   getCommunitiesByMember
 } from "../api/communityAPI";
-import { Plus, Search } from "lucide-react";
+import { Plus, Filter, Search } from "lucide-react";
 import CommunityCard from "../components/CommunityCard";
 import CreateCommunityModal from "../components/CreateCommunityModal";
 import toast from "react-hot-toast";
-//import { useNavigate } from "react-router-dom";
+
 const CommunitiesPage = () => {
   const { currentUser } = useAuth();
   const [communities, setCommunities] = useState([]);
@@ -18,7 +18,7 @@ const CommunitiesPage = () => {
   const [filter, setFilter] = useState("all"); // all, my, public
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("");
-//   const navigate = useNavigate();
+
   useEffect(() => {
     fetchCommunities();
   }, [filter, currentUser]);
@@ -61,11 +61,15 @@ const CommunitiesPage = () => {
   };
 
   const handleJoin = (_communityId) => {
+    // Refresh communities after a user joins
     fetchCommunities();
+    // No need for toast here as it's already shown in the CommunityCard component
   };
 
   const handleLeave = (_communityId) => {
+    // Refresh communities after a user leaves
     fetchCommunities();
+    // No need for toast here as it's already shown in the CommunityCard component
   };
 
   const filteredCommunities = communities
@@ -77,7 +81,6 @@ const CommunitiesPage = () => {
       category ? community.category === category : true
     );
 
-    // Define the categories for filtering communities
   const categories = [
     "Programming",
     "Data Science",
@@ -88,8 +91,6 @@ const CommunitiesPage = () => {
     "Cybersecurity",
     "Other"
   ];
-  // Define the categories for filtering communities  /
-  // This is a static list, but you can fetch it from an API if needed
 
   return (
     <div className="container mx-auto px-4 py-8">

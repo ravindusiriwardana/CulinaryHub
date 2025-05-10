@@ -63,6 +63,7 @@ public class PostService {
         postRepository.delete(post);
     }
 
+    //Create comments
     public Post addComment(String postId, Comment comment) {
         Post post = getPostById(postId);
         if (post.getComments() == null) {
@@ -84,6 +85,7 @@ public class PostService {
         return post;
     }
 
+    //update comments
     public Post updateComment(String postId, String commentId, Comment commentDetails) {
         Post post = getPostById(postId);
         post.getComments().stream()
@@ -96,6 +98,7 @@ public class PostService {
         return postRepository.save(post);
     }
 
+    //delete comments
     public Post deleteComment(String postId, String commentId, String userId) {
         Post post = getPostById(postId);
         boolean isPostOwner = post.getUserId().equals(userId);

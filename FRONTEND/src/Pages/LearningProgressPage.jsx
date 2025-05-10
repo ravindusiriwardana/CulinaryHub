@@ -15,6 +15,7 @@ import {
   removeLike,
   addComment,
 } from "../api/learningProgressAPI";
+import { getLearningPlansByUserId } from "../api/learningPlanAPI";
 import {
   Award,
   BookOpen,
@@ -26,7 +27,8 @@ import {
   Edit,
   X,
   Filter,
-  Plus
+  Plus,
+  Book
 } from "lucide-react";
 
 // Status options
@@ -90,6 +92,8 @@ const LearningProgressPage = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [filterType, setFilterType] = useState("all");
   const { modalState, openModal, closeModal } = useConfirmModal();
+  const [userLearningPlans, setUserLearningPlans] = useState([]);
+  const [selectedLearningPlan, setSelectedLearningPlan] = useState("");
 
   const {
     register,
@@ -125,6 +129,24 @@ const LearningProgressPage = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const fetchUserPlans = async () => {
+      if (!currentUser?.id) return;
+      
+      try {
+        const response = await getLearningPlansByUserId(
+          currentUser.id, 
+          currentUser.token
+        );
+        setUserLearningPlans(response.data || []);
+      } catch (error) {
+        console.error("Error fetching learning plans:", error);
+      }
+    };
+    
+    fetchUserPlans();
+  }, [currentUser]);
 
   const handleTemplateChange = (e) => {
     setSelectedTemplate(e.target.value);
@@ -173,6 +195,7 @@ const LearningProgressPage = () => {
         userProfileImage: currentUser.profileImage,
         templateType: selectedTemplate,
         status: selectedStatus,
+        learningPlanId: selectedLearningPlan,
         ...data,
       };
 
@@ -592,6 +615,28 @@ const LearningProgressPage = () => {
                           />
                         </div>
                     )}
+                  </div>
+
+                  <div className="mb-4">
+                    <div className="flex items-center mb-2">
+                      <Book size={16} className="text-yellow-400 mr-2" />
+                      <label className="text-sm font-medium text-yellow-400">
+                        Related Learning Plan (Optional)
+                      </label>
+                    </div>
+                    <select
+                      value={selectedLearningPlan}
+                      onChange={(e) => setSelectedLearningPlan(e.target.value)}
+                      className="w-full p-2 bg-black rounded-lg border border-gray-700 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none appearance-none"
+                      disabled={isSubmitting}
+                    >
+                      <option value="">None</option>
+                      {userLearningPlans.map(plan => (
+                        <option key={plan.id} value={plan.id}>
+                          {plan.title}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="mt-6 flex justify-end space-x-3">

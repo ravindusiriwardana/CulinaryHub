@@ -30,7 +30,8 @@ public class Notification {
         this.createdAt = new Date();
     }
 
-    // Getters and Setters
+    
+    //getters & setters
     public String getId() {
         return id;
     }

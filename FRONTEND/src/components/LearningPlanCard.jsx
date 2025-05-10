@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Edit, Trash, Heart, MessageSquare, Book, Link as LinkIcon, Share2, Bookmark } from "lucide-react";
+import { Edit, Trash, Heart, MessageSquare, Book, Link as LinkIcon, Share2, Bookmark, BookOpen } from "lucide-react";
 import Comment, { CommentForm } from "./CommentComponent";
 import useConfirmModal from "../hooks/useConfirmModal";
 import ConfirmModal from "./ConfirmModal";
 import UserAvatar from "./UserAvatar";
 import { Link as NavigateLink } from "react-router-dom";
 import toast from "react-hot-toast";
+import { getLearningProgressByUserId } from "../api/learningProgressAPI";
 
 const LearningPlanCard = ({
                             plan,
@@ -22,6 +23,8 @@ const LearningPlanCard = ({
   const [showComments, setShowComments] = useState(false);
   const [saved, setSaved] = useState(false);
   const { modalState, openModal, closeModal } = useConfirmModal();
+  const [relatedProgress, setRelatedProgress] = useState([]);
+  const [showRelatedProgress, setShowRelatedProgress] = useState(false);
 
   const isLikedByUser = plan.likes?.some(
       (like) => like.userId === currentUser?.id
@@ -63,6 +66,27 @@ const LearningPlanCard = ({
           ?.split(",")
           .map((resource) => resource.trim())
           .filter(Boolean) || [];
+
+  useEffect(() => {
+    const fetchRelatedProgress = async () => {
+      if (!showRelatedProgress) return;
+      
+      try {
+        const response = await getLearningProgressByUserId(plan.userId, token);
+        // Filter progress entries that are related to this plan
+        const filtered = response.data.filter(
+          progress => progress.learningPlanId === plan.id
+        );
+        setRelatedProgress(filtered);
+      } catch (error) {
+        console.error("Error fetching related progress:", error);
+      }
+    };
+    
+    if (showRelatedProgress) {
+      fetchRelatedProgress();
+    }
+  }, [showRelatedProgress, plan.id, plan.userId, token]);
 
   return (
       <div className="bg-black rounded-xl shadow-lg border border-gray-500 overflow-hidden">
@@ -227,6 +251,17 @@ const LearningPlanCard = ({
               >
                 <Share2 size={18} />
               </motion.button>
+
+              <motion.button
+                  className="flex items-center px-3 py-1.5 rounded-lg text-gray-400 hover:bg-black hover:text-white transition-colors cursor-pointer"
+                  onClick={() => setShowRelatedProgress(!showRelatedProgress)}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  aria-label="Show related progress"
+              >
+                <BookOpen size={18} />
+                <span className="ml-1">{relatedProgress.length || 0}</span>
+              </motion.button>
             </div>
           </div>
         </div>
@@ -264,6 +299,44 @@ const LearningPlanCard = ({
                 )}
               </div>
             </div>
+        )}
+
+        {/* Related Progress Section */}
+        {showRelatedProgress && (
+          <div className="p-4 bg-black/80 border-t border-gray-800">
+            <h4 className="text-white font-medium mb-3">Related Progress Updates</h4>
+            {relatedProgress.length > 0 ? (
+              <div className="space-y-3">
+                {relatedProgress.map(progress => (
+                  <div key={progress.id} className="p-3 bg-black/90 rounded-lg border border-gray-700">
+                    <Link 
+                      to={`/progress/${progress.id}`}
+                      className="text-yellow-400 hover:underline font-medium"
+                    >
+                      {progress.title}
+                    </Link>
+                    <p className="text-gray-400 text-sm mt-1 line-clamp-2">
+                      {progress.description}
+                    </p>
+                    <div className="flex items-center mt-2">
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-medium ${
+                        STATUS_OPTIONS[progress.status]?.color || "bg-black text-gray-300 border border-gray-700"
+                      }`}>
+                        {STATUS_OPTIONS[progress.status]?.name || "Status"}
+                      </span>
+                      <span className="text-xs text-gray-500 ml-2">
+                        {new Date(progress.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-center text-gray-500 py-3">
+                No progress updates linked to this plan yet.
+              </p>
+            )}
+          </div>
         )}
 
         {/* Confirmation Modal */}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Users, Lock, Unlock, UserPlus, UserMinus, Clock, MoreHorizontal, Edit, Trash } from "lucide-react";
 import { joinCommunity, leaveCommunity, isMember, isAdmin, isCreator, deleteCommunity } from "../api/communityAPI";
@@ -40,24 +40,11 @@ const CommunityCard = ({ community, currentUser, onJoin, onLeave, onUpdate }) =>
     checkUserRoles();
   }, [community, currentUser]);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (popupRef.current && !popupRef.current.contains(event.target)) {
-        setIsPopupOpen(false);
-      }
-    };
-    // Close the popup if the user clicks outside of it
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const handleJoin = async () => {
     if (!currentUser) {
       toast.error("Please log in to join communities");
       return;
     }
-    // Check if the user is already a member
 
     setLoading(true);
     try {
@@ -75,11 +62,6 @@ const CommunityCard = ({ community, currentUser, onJoin, onLeave, onUpdate }) =>
   // Function to handle joining the community
   // This function is called when the user clicks the "Join" button
 
-  //
-  // Function to handle leaving the community
-  // This function is called when the user clicks the "Leave" button
-  // It sends a request to the server to remove the user from the community
-  // and updates the local state accordingly
   const handleLeave = async () => {
     if (!currentUser) return;
 
@@ -292,6 +274,5 @@ const CommunityCard = ({ community, currentUser, onJoin, onLeave, onUpdate }) =>
     </div>
   );
 };
-///add
 
 export default CommunityCard;

@@ -156,221 +156,149 @@ const EditLearningProgressModal = ({
             </button>
           </div>
 
-          <form onSubmit={handleSubmit(onSubmit)} className="p-4">
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              {/* Progress Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Progress Type
-                </label>
-                <div className="relative">
-                  <select
+          <div className="p-4">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+              {/* Template and Status Selection */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Template */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Template
+                  </label>
+                  <div className="relative">
+                    <select
                       value={selectedTemplate}
                       onChange={handleTemplateChange}
-                      className="w-full p-2 bg-black rounded-lg border border-gray-500 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none appearance-none pl-8 pr-4"
-                  >
-                    {TEMPLATES.map((template) => (
+                      className="w-full p-2 bg-black rounded-lg border border-gray-700 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none appearance-none pl-8 pr-4"
+                    >
+                      {TEMPLATES.map((template) => (
                         <option key={template.id} value={template.id}>
                           {template.name}
                         </option>
-                    ))}
-                  </select>
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none text-yellow-400">
-                    {TEMPLATES.find(t => t.id === selectedTemplate)?.icon}
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none">
+                      <span className="text-yellow-400">
+                        {TEMPLATES.find(t => t.id === selectedTemplate)?.icon}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Status */}
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-1">
-                  Status
-                </label>
-                <div className="relative">
-                  <select
+                {/* Status */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Status
+                  </label>
+                  <div className="relative">
+                    <select
                       value={selectedStatus}
                       onChange={handleStatusChange}
-                      className="w-full p-2 bg-black rounded-lg border border-gray-500 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none appearance-none pl-8 pr-4"
-                  >
-                    {STATUS_OPTIONS.map((status) => (
+                      className="w-full p-2 bg-black rounded-lg border border-gray-700 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none appearance-none pl-8 pr-4"
+                    >
+                      {STATUS_OPTIONS.map((status) => (
                         <option key={status.id} value={status.id} className={status.color}>
                           {status.name}
                         </option>
-                    ))}
-                  </select>
-                  <div className="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none">
-                  <span className={STATUS_OPTIONS.find(s => s.id === selectedStatus)?.color}>
-                    {STATUS_OPTIONS.find(s => s.id === selectedStatus)?.icon}
-                  </span>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none">
+                      <span className={STATUS_OPTIONS.find(s => s.id === selectedStatus)?.color}>
+                        {STATUS_OPTIONS.find(s => s.id === selectedStatus)?.icon}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            {/* Dynamic Form Fields based on selected template */}
-            <div className="space-y-4">
-              {currentTemplate.fields.includes("title") && (
+              {/* Dynamic Form Fields based on selected template */}
+              <div className="space-y-4">
+                {currentTemplate.fields.includes("title") && (
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">
                       Title*
                     </label>
                     <input
-                        type="text"
-                        {...register("title", { required: "Title is required" })}
-                        placeholder="Give your progress update a clear title"
-                        className={`w-full p-2 bg-black rounded-lg border ${
-                            errors.title ? "border-red-500" : "border-gray-500"
-                        } text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none`}
+                      type="text"
+                      {...register("title", { required: "Title is required" })}
+                      placeholder="Give your progress update a clear title"
+                      className={`w-full p-2 bg-black rounded-lg border ${
+                        errors.title ? "border-red-500" : "border-gray-700"
+                      } text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none`}
                     />
                     {errors.title && (
-                        <p className="mt-1 text-sm text-red-500">
-                          {errors.title.message}
-                        </p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.title.message}
+                      </p>
                     )}
                   </div>
-              )}
+                )}
 
-              {currentTemplate.fields.includes("description") && (
+                {/* Other form fields with consistent styling */}
+                {currentTemplate.fields.includes("description") && (
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">
                       Description*
                     </label>
                     <textarea
-                        {...register("description", {
-                          required: currentTemplate.fields.includes("description")
-                              ? "Description is required"
-                              : false,
-                        })}
-                        placeholder="Describe what you've learned or accomplished"
-                        rows="3"
-                        className={`w-full p-2 bg-black rounded-lg border ${
-                            errors.description ? "border-red-500" : "border-gray-500"
-                        } text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-none`}
+                      {...register("description", {
+                        required: currentTemplate.fields.includes("description")
+                          ? "Description is required"
+                          : false,
+                      })}
+                      placeholder="Describe what you've learned or accomplished"
+                      rows="3"
+                      className={`w-full p-2 bg-black rounded-lg border ${
+                        errors.description ? "border-red-500" : "border-gray-700"
+                      } text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-none`}
                     />
                     {errors.description && (
-                        <p className="mt-1 text-sm text-red-500">
-                          {errors.description.message}
-                        </p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.description.message}
+                      </p>
                     )}
                   </div>
-              )}
+                )}
 
-              {currentTemplate.fields.includes("tutorialName") && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Tutorial Name*
-                    </label>
-                    <input
-                        type="text"
-                        {...register("tutorialName", {
-                          required: currentTemplate.fields.includes("tutorialName")
-                              ? "Tutorial name is required"
-                              : false,
-                        })}
-                        placeholder="Name of the tutorial you completed"
-                        className={`w-full p-2 bg-black rounded-lg border ${
-                            errors.tutorialName ? "border-red-500" : "border-gray-500"
-                        } text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none`}
-                    />
-                    {errors.tutorialName && (
-                        <p className="mt-1 text-sm text-red-500">
-                          {errors.tutorialName.message}
-                        </p>
-                    )}
-                  </div>
-              )}
-
-              {currentTemplate.fields.includes("projectName") && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Project Name*
-                    </label>
-                    <input
-                        type="text"
-                        {...register("projectName", {
-                          required: currentTemplate.fields.includes("projectName")
-                              ? "Project name is required"
-                              : false,
-                        })}
-                        placeholder="Name of your project"
-                        className={`w-full p-2 bg-black rounded-lg border ${
-                            errors.projectName ? "border-red-500" : "border-gray-500"
-                        } text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none`}
-                    />
-                    {errors.projectName && (
-                        <p className="mt-1 text-sm text-red-500">
-                          {errors.projectName.message}
-                        </p>
-                    )}
-                  </div>
-              )}
-
-              {currentTemplate.fields.includes("skillsLearned") && (
+                {/* Consistent spacing and styling for all fields */}
+                {currentTemplate.fields.includes("skillsLearned") && (
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-1">
                       Skills Learned
                     </label>
-                    <input
-                        type="text"
-                        {...register("skillsLearned")}
-                        placeholder="Skills or technologies (comma-separated)"
-                        className="w-full p-2 bg-black rounded-lg border border-gray-500 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">Example: JavaScript, React, Node.js</p>
-                  </div>
-              )}
-
-              {currentTemplate.fields.includes("challenges") && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Challenges Faced
-                    </label>
                     <textarea
-                        {...register("challenges")}
-                        placeholder="What challenges did you encounter and how did you overcome them?"
-                        rows="2"
-                        className="w-full p-2 bg-black rounded-lg border border-gray-500 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-none"
+                      {...register("skillsLearned")}
+                      placeholder="What skills did you learn or improve?"
+                      rows="2"
+                      className="w-full p-2 bg-black rounded-lg border border-gray-700 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-none"
                     />
                   </div>
-              )}
+                )}
+              </div>
 
-              {currentTemplate.fields.includes("nextSteps") && (
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-1">
-                      Next Steps
-                    </label>
-                    <textarea
-                        {...register("nextSteps")}
-                        placeholder="What are your next steps or goals?"
-                        rows="2"
-                        className="w-full p-2 bg-black rounded-lg border border-gray-500 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none resize-none"
-                    />
-                  </div>
-              )}
-            </div>
-
-            <div className="flex justify-end space-x-3 mt-6">
-              <motion.button
+              <div className="flex justify-end space-x-3 mt-6">
+                <motion.button
                   type="button"
                   onClick={onClose}
                   className="px-4 py-2 bg-black text-gray-300 rounded-lg hover:bg-gray-900 transition-colors cursor-pointer"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   disabled={isSubmitting}
-              >
-                Cancel
-              </motion.button>
-              <motion.button
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
                   type="submit"
                   className="px-4 py-2 bg-yellow-500 text-black rounded-lg hover:bg-yellow-400 transition-colors disabled:bg-yellow-900 disabled:text-gray-500 cursor-pointer"
                   whileHover={{ scale: isSubmitting ? 1 : 1.03 }}
                   whileTap={{ scale: isSubmitting ? 1 : 0.97 }}
                   disabled={isSubmitting}
-              >
-                {isSubmitting ? "Updating..." : "Update Progress"}
-              </motion.button>
-            </div>
-          </form>
+                >
+                  {isSubmitting ? "Updating..." : "Update Progress"}
+                </motion.button>
+              </div>
+            </form>
+          </div>
         </motion.div>
       </div>
   );
